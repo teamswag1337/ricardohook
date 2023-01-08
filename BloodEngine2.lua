@@ -101,20 +101,22 @@ do  --Character
     Character = Player.Character
     HumanoidRootPart = Character:WaitForChild("HumanoidRootPart", 999)
 
-    for I, V in pairs(getgc(true)) do
-        if type(V) == "table" and rawget(V, "WalkSpeed") then
-            task.spawn(function()
-                while task.wait() do
-                    if Toggles.InfiniteStamina then
-                        rawset(V, "Current", 9e9)
-                    end
-                    if Toggles.CustomRunSpeed then
-                        rawset(V, "RunSpeed", Values.RunSpeed)
-                    end
-                end
-            end)
-        end
-    end
+    task.delay(5, function()
+      for I, V in pairs(getgc(true)) do
+          if type(V) == "table" and rawget(V, "WalkSpeed") then
+              task.spawn(function()
+                  while task.wait() do
+                      if Toggles.InfiniteStamina then
+                          rawset(V, "Current", 9e9)
+                      end
+                      if Toggles.CustomRunSpeed then
+                          rawset(V, "RunSpeed", Values.RunSpeed)
+                      end
+                  end
+              end)
+          end
+      end
+    end)
   end
   Player.CharacterAdded:Connect(CharacterAdded)
   if Player.Character then
