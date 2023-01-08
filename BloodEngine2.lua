@@ -101,7 +101,7 @@ do  --Character
     Character = Player.Character
     HumanoidRootPart = Character:WaitForChild("HumanoidRootPart", 999)
 
-    task.delay(5, function()
+    task.delay(1, function()
       for I, V in pairs(getgc(true)) do
           if type(V) == "table" and rawget(V, "WalkSpeed") then
               task.spawn(function()
@@ -242,13 +242,34 @@ do  --GUI
   do  --Player Menu
     local Target = ""
     local AllPlayers = PlayerMenu:addSection({text = 'Players',side = 'auto',})
-    AllPlayers:addLabel({text="For anything that is \nkill, please equip your melee."})
+    AllPlayers:addLabel({text="For anything that is\nkill, please equip your melee."})
+    AllPlayers:addTextbox({text="Target(s)"}):bindToEvent("onFocusLost", function(Text)
+      Target = string.lower(Text)
+    end)
     AllPlayers:addButton({text="Kill Player(s)", style="large"}):bindToEvent("onClick", function()
+      local Saved = Character:FindFirstChild("HumanoidRootPart").CFrame
         for I, V in pairs(Functions:FindPlayer(Target)) do
             if V.Character and V.Character:FindFirstChild("HumanoidRootPart") and Character and Character:FindFirstChild("HumanoidRootPart") then
-
+                local Tool = Character:FindFirstChildOfClass("Tool")
+                if Tool then
+                  local Trys = 0
+                  repeat task.wait()
+                    Trys += 1
+                    if V.Character and Character and Character:FindFirstChild("HumanoidRootPart") and V.Character:FindFirstChild("HumanoidRootPart") and V.Character:FindFirstChild("Head") then
+                        Character.HumanoidRootPart.CFrame = V.Character.HumanoidRootPart.CFrame
+                        local HeadPosition = V.Character.Head.Position
+        								local HeadCFrame = V.Character.Head.CFrame
+        								task.spawn(function()
+                          pcall(function() --incase server errors
+                              Tool.Scripts.Damage:InvokeServer(Tool, V.Character.Humanoid, V.Character.Head, HeadPosition, HeadPosition, HeadCFrame, HeadCFrame, 70, nil, HeadPosition)
+                          end)
+        								end)
+                    end
+                  until Trys == 50 or V.Character.Humanoid.Health == 0
+                end
             end
         end
+        Character:FindFirstChild("HumanoidRootPart").CFrame = Saved
     end)
     AllPlayers:addButton({text="Kill All (Equip Melee)", style="large"}):bindToEvent("onClick", function()
       local Position = Character.HumanoidRootPart.CFrame
