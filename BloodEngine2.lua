@@ -21,6 +21,7 @@ local Toggles = {
   ["CustomRunSpeed"] = false,
   ["NoFallDamage"] = false,
   ["Noclip"] = false,
+  ["AutoSelfRevive"] = false,
 }
 local Values = {
   ["Speed"] = 0.5,
@@ -136,6 +137,15 @@ do  --Loops
     end
   end, 0)
 
+  Functions:CreateLoop("AutoSelfRevive", function()
+    if Character and Character:FindFirstChild("Humanoid") and Toggles.AutoSelfRevive then
+        if Character.Humanoid.Health < 16 then
+          Character.Scripts.Client.Stomp_Kick_Revive_Client.Self_Event:FireServer(Character.Humanoid, "(#%*#%*#%A@$#*%#)lol(%#)%&#*")
+          Character.Scripts.Client.ScreenAnimation_Client.Remote:FireServer("Stop")
+        end
+    end
+  end, 0.05)
+
   Functions:CreateLoop("KillAura", function()
     if Toggles.KillAura then
 			if Character and Character:FindFirstChild("HumanoidRootPart") then
@@ -203,8 +213,12 @@ do  --GUI
   do --Combat Section
     local CombatSection = CombatMenu:addSection({text = 'Combat',side = 'auto',})
     local KillAura = CombatSection:addToggle({text = 'Kill Aura'})
+    local AutoSelfRevive = CombatSection:addToggle({text = 'Auto Self Revive'})
     KillAura:bindToEvent("onToggle", function(State)
       Toggles.KillAura = State
+    end)
+    AutoSelfRevive:bindToEvent("onToggle", function(State)
+      Toggles.AutoSelfRevive = State
     end)
   end
 
@@ -231,6 +245,7 @@ do  --GUI
     CustomRunSpeed:bindToEvent("onToggle", function(State)
       Toggles.CustomRunSpeed = State
     end)
+
     CharacterSection:addSlider({text='Speed Value', min=0.1, max=1, step=0.1, val=0.5}, function(Value)
       Values.Speed = Value
     end)
